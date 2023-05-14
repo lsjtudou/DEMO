@@ -1,9 +1,6 @@
 package com.sliu.JPADemo.dao;
 
-import com.sliu.JPADemo.entity.ScoreEntity;
-import com.sliu.JPADemo.entity.ScoreId;
-import com.sliu.JPADemo.entity.StudentEntity;
-import com.sliu.JPADemo.entity.SubjectEntity;
+import com.sliu.JPADemo.entity.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,29 +22,27 @@ public class StudentRepositoryTest {
     @Test
     public void testFind() {
         List<StudentEntity> students = studentRepository.findByStudentName("Jeff");
-        System.out.println(students);
         StudentEntity student = students.get(0);
-        student.getAddress().removeAll(student.getAddress());
-        student.getScores().removeAll(student.getScores());
-        studentRepository.delete(student);
+        System.out.println(student);
+
     }
 
     @Test
     public void testAdd() {
         List<SubjectEntity> list = subjectRepository.findAll();
         StudentEntity studentEntity = new StudentEntity();
-        studentEntity.setStudentId("1");
+        studentEntity.setStudentId("");
         studentEntity.setStudentName("Jeff");
         studentEntity.setStudentAge(30);
 
         ScoreEntity scoreEntity1 = new ScoreEntity();
-        scoreEntity1.setScore("90");
+        scoreEntity1.setScore("70");
         scoreEntity1.setScoreId(new ScoreId());
         scoreEntity1.setStudent(studentEntity);
         scoreEntity1.setSubjectEntity(list.get(0));
 
         ScoreEntity scoreEntity2 = new ScoreEntity();
-        scoreEntity2.setScore("100");
+        scoreEntity2.setScore("80");
         scoreEntity2.setScoreId(new ScoreId());
         scoreEntity2.setStudent(studentEntity);
         scoreEntity2.setSubjectEntity(list.get(1));
@@ -66,7 +61,7 @@ public class StudentRepositoryTest {
     @Test
     public void testUpdate() {
         StudentEntity studentEntity = new StudentEntity();
-        studentEntity.setStudentAge(30);
+        studentEntity.setStudentAge(10);
         Example<StudentEntity> studentPoExample = Example.of(studentEntity);
         List<StudentEntity> list = studentRepository.findAll(studentPoExample);
         StudentEntity studentEntity1 = list.get(0);
@@ -74,13 +69,12 @@ public class StudentRepositoryTest {
         List<SubjectEntity> list1 = subjectRepository.findAll();
         ScoreEntity scoreEntity1 = new ScoreEntity();
         scoreEntity1.setScore("45");
-        scoreEntity1.setScoreId(new ScoreId());
+        scoreEntity1.setScoreId(new ScoreId(studentEntity1.getStudentId(), list1.get(0).getSubjectId()));
         scoreEntity1.setStudent(studentEntity1);
         scoreEntity1.setSubjectEntity(list1.get(0));
 
         List<ScoreEntity> scores = new ArrayList<>();
         scores.add(scoreEntity1);
-
         studentEntity1.setScores(scores);
         studentRepository.save(studentEntity1);
     }
@@ -117,8 +111,10 @@ public class StudentRepositoryTest {
     }
 
     @Test
-    public void testDelete() {
-        studentRepository.deleteById("2");
+    public void testDelete() throws Exception {
+        StudentEntity student = studentRepository.findById("31").orElseThrow(Exception::new);
+        student.setScores(new ArrayList<>());
+        studentRepository.save(student);
     }
 
 
