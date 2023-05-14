@@ -1,6 +1,5 @@
 package com.sliu.JPADemo.utils;
 
-import lombok.Data;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
